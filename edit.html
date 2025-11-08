@@ -48,7 +48,7 @@
             
             <div class="btn-group">
                 <button type="submit" class="btn btn-success">[확인]</button>
-                <a href="index.html" id="cancel-link" class="btn btn-secondary">[취소]</a>
+                <a href="my_ajax.html" id="cancel-link" class="btn btn-secondary">[취소]</a>
             </div>
         </form>
     </div>
@@ -72,7 +72,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (!wordId) {
                 alert('오류: ID 값이 없습니다.');
-                window.location.href = 'index.html'; // ID 없으면 목록으로
+                window.location.href = 'my_ajax.html'; // ID 없으면 목록으로
                 return;
             }
             
