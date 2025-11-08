@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>단어 상세 보기</title>
+    <link rel="stylesheet" href="my.css">
+</head>
+<body>
+    <div class="container">
+        <h1> 단어 상세 정보</h1>
+        
+        <div class="view-details" id="word-details">
+            <p>데이터를 불러오는 중...</p>
+        </div>
+
+        <div class="btn-group">
+            <a href="edit.html" class="btn btn-warning" id="edit-link">[수정]</a>
+            <button class="btn btn-danger" onclick="deleteWord()">[삭제]</button>
+            <a href="index.html" class="btn btn-secondary">[목록]</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. URL에서 ID 값 추출하기
+        const params = new URLSearchParams(window.location.search);
+        const wordId = params.get('id');
+        
+        const detailsDiv = document.getElementById('word-details');
+        const editLink = document.getElementById('edit-link');
+
+        // 2. 페이지 로드 시, 해당 ID의 데이터 1개만 가져오기 (Read Detail)
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!wordId) {
+                detailsDiv.innerHTML = '<p style="color: red;">오류: ID 값이 없습니다.</p>';
+                return;
+            }
+            
+            // 수정 버튼의 링크에도 ID를 추가
+            editLink.href = `edit.html?id=${wordId}`;
+
+            // 1개의 데이터만 요청 (예: /words/1)
+            fetch(`http://localhost:3000/words/${wordId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('데이터를 찾을 수 없습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 3. 받아온 데이터로 화면 채우기
+                    
+                    // 중요도를 별 문자로 변환
+                    let importanceStars = '★'.repeat(parseInt(data.importance) || 0);
+                    
+                    detailsDiv.innerHTML = `
+                        <p><strong>단어</strong> ${data.word}</p>
+                        <p><strong>의미</strong> ${data.meaning}</p>
+                        <p><strong>예문</strong> ${data.example || '(입력 없음)'}</p>
+                        <p><strong>암기 상태</strong> ${data.status}</p>
+                        <p><strong>중요도</strong> <span style="color: #ffc107;">${importanceStars}</span></p>
+                        <p><strong>등록일</strong> ${data.reg_date}</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    detailsDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+                });
+        });
+
+        // 4. 삭제 (Delete) 기능 구현
+        function deleteWord() {
+            if (!wordId) {
+                alert('ID 값이 없어 삭제할 수 없습니다.');
+                return;
+            }
+
+            if (confirm('정말로 이 단어를 삭제할까요?')) {
+                // DELETE 요청 (예: /words/1)
+                fetch(`http://localhost:3000/words/${wordId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('삭제 실패');
+                    }
+                    alert('삭제되었습니다.');
+                    window.location.href = 'index.html'; // 목록 페이지로 이동
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다. (json-server 실행 확인)');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

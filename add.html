@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 단어 추가</title>
+    <link rel="stylesheet" href="my.css">
+</head>
+<body>
+    <div class="container">
+        <h1> 새 단어 추가</h1>
+
+        <form id="add-form">
+            <div class="form-group">
+                <label for="word">단어</label>
+                <input type="text" id="word" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="meaning">의미</label>
+                <input type="text" id="meaning" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="example">예문</label>
+                <textarea id="example" rows="4" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">암기 상태</label>
+                <select id="status" class="form-control">
+                    <option value="">-- 선택하세요 --</option>
+                    <option value="미암기">미암기</option>
+                    <option value="암기 중">암기 중</option>
+                    <option value="암기 완료">암기 완료</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="importance">중요도</label>
+                <select id="importance" class="form-control">
+                    <option value="">-- 선택하세요 --</option>
+                    <option value="1">★</option>
+                    <option value="2">★★</option>
+                    <option value="3">★★★</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reg-date">등록일</label>
+                <input type="date" id="reg-date" class="form-control">
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">[확인]</button>
+                <a href="index.html" class="btn btn-secondary">[취소]</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 자동 제출 방지
+
+            // 1. 폼 데이터 가져오기
+            const word = document.getElementById('word').value.trim();
+            const meaning = document.getElementById('meaning').value.trim();
+            const example = document.getElementById('example').value.trim();
+            const status = document.getElementById('status').value;
+            const importance = document.getElementById('importance').value;
+            const reg_date = document.getElementById('reg-date').value;
+
+            // 2. Validation Check
+            if (word === '' || meaning === '' || status === '' || importance === '' || reg_date === '') {
+                alert('모든 필수 항목(단어, 의미, 암기 상태, 중요도, 등록일)을 입력/선택해주세요.');
+                return;
+            }
+
+            // 3. 서버로 보낼 객체 생성
+            const newWord = {
+                word: word,
+                meaning: meaning,
+                example: example,
+                status: status,
+                importance: importance,
+                reg_date: reg_date
+                // id는 json-server가 자동으로 생성합니다.
+            };
+
+            // 4. fetch를 사용하여 POST 요청 (Create)
+            fetch('http://localhost:3000/words', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newWord)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('데이터 추가 실패');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 5. 성공 시
+                alert('단어가 성공적으로 추가되었습니다.');
+                // 목록 페이지로 이동
+                window.location.href = 'index.html'; 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('단어 추가 중 오류가 발생했습니다. (json-server 실행 확인)');
+            });
+        });
+    </script>
+</body>
+</html>

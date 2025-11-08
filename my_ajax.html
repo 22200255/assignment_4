@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 단어장</title>
+    <link rel="stylesheet" href="my.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 나만의 단어장 (AJAX)</h1>
+        
+        <div class="btn-group">
+            <a href="add.html" class="btn btn-primary">[추가]</a>
+        </div>
+        
+        <table class="word-table">
+            <thead>
+                <tr>
+                    <th>단어</th>
+                    <th>의미</th>
+                    <th>암기 상태</th>
+                    <th>등록일</th>
+                </tr>
+            </thead>
+            <tbody id="word-list-body">
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px;">
+                        데이터를 불러오는 중...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 페이지 로드가 완료되면 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('word-list-body');
+            
+            // 1. json-server에서 데이터 가져오기 (Read)
+            fetch('http://localhost:3000/words')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('데이터 로드 실패: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 2. tbody 내용 비우기
+                    tbody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">등록된 단어가 없습니다.</td></tr>';
+                        return;
+                    }
+
+                    // 3. 받아온 데이터(배열)를 순회하며 <tr> 생성
+                    data.forEach(word => {
+                        const tr = document.createElement('tr');
+                        
+                        // 4. <tr>에 내용 채우기 (data-label은 모바일 반응형을 위함)
+                        //    - 핵심: 상세 보기 링크에 ?id=${word.id} 를 추가합니다.
+                        tr.innerHTML = `
+                            <td data-label="단어" class="word-title">
+                                <a href="view.html?id=${word.id}">${word.word}</a>
+                            </td>
+                            <td data-label="의미">${word.meaning}</td>
+                            <td data-label="암기 상태">${word.status}</td>
+                            <td data-label="등록일">${word.reg_date}</td>
+                        `;
+                        
+                        // 5. 생성된 <tr>을 tbody에 추가
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: red;">
+                                <strong>오류 발생:</strong> ${error.message}
+                                <br>(json-server가 실행 중인지 확인하세요)
+                            </td>
+                        </tr>`;
+                });
+        });
+    </script>
+</body>
+</html>

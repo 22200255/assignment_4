@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>단어 수정</title>
+    <link rel="stylesheet" href="my.css">
+</head>
+<body>
+    <div class="container">
+        <h1> 단어 수정</h1>
+
+        <form id="edit-form">
+            <div class="form-group">
+                <label for="word">단어</label>
+                <input type="text" id="word" class="form-control" value="로딩 중...">
+            </div>
+            <div class="form-group">
+                <label for="meaning">의미</label>
+                <input type="text" id="meaning" class="form-control" value="로딩 중...">
+            </div>
+            <div class="form-group">
+                <label for="example">예문</label>
+                <textarea id="example" rows="4" class="form-control">로딩 중...</textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">암기 상태</label>
+                <select id="status" class="form-control">
+                    <option value="">-- 로딩 중 --</option>
+                    <option value="미암기">미암기</option>
+                    <option value="암기 중">암기 중</option>
+                    <option value="암기 완료">암기 완료</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="importance">중요도</label>
+                <select id="importance" class="form-control">
+                    <option value="">-- 로딩 중 --</option>
+                    <option value="1">★</option>
+                    <option value="2">★★</option>
+                    <option value="3">★★★</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reg-date">등록일</label>
+                <input type="date" id="reg-date" class="form-control" value="">
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">[확인]</button>
+                <a href="index.html" id="cancel-link" class="btn btn-secondary">[취소]</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 1. URL에서 ID 값 추출
+        const params = new URLSearchParams(window.location.search);
+        const wordId = params.get('id');
+
+        // 폼 요소 미리 찾아두기
+        const form = document.getElementById('edit-form');
+        const inputWord = document.getElementById('word');
+        const inputMeaning = document.getElementById('meaning');
+        const inputExample = document.getElementById('example');
+        const selectStatus = document.getElementById('status');
+        const selectImportance = document.getElementById('importance');
+        const inputRegDate = document.getElementById('reg-date');
+        const cancelLink = document.getElementById('cancel-link');
+
+        // 2. 페이지 로드 시, 수정할 기존 데이터 1개 가져오기
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!wordId) {
+                alert('오류: ID 값이 없습니다.');
+                window.location.href = 'index.html'; // ID 없으면 목록으로
+                return;
+            }
+            
+            // 취소 버튼이 상세 보기 페이지로 돌아가도록 링크 설정
+            cancelLink.href = `view.html?id=${wordId}`;
+
+            // 기존 데이터 1개 요청 (예: /words/1)
+            fetch(`http://localhost:3000/words/${wordId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('데이터를 찾을 수 없습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 3. 받아온 데이터로 폼(form)의 값들 채우기
+                    inputWord.value = data.word;
+                    inputMeaning.value = data.meaning;
+                    inputExample.value = data.example || ''; // 예문이 null일 경우 빈 문자열
+                    selectStatus.value = data.status;
+                    selectImportance.value = data.importance;
+                    inputRegDate.value = data.reg_date;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message);
+                });
+        });
+
+        // 4. 폼 제출(수정) 이벤트 (Update)
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+
+            // 폼에서 수정된 값들 가져오기
+            const updatedWord = {
+                word: inputWord.value.trim(),
+                meaning: inputMeaning.value.trim(),
+                example: inputExample.value.trim(),
+                status: selectStatus.value,
+                importance: selectImportance.value,
+                reg_date: inputRegDate.value
+                // id는 json-server가 관리하므로 PUT 요청 시엔 그대로 사용
+            };
+
+            // Validation Check
+            if (updatedWord.word === '' || updatedWord.meaning === '' || updatedWord.status === '' || updatedWord.importance === '' || updatedWord.reg_date === '') {
+                alert('모든 필수 항목(단어, 의미, 암기 상태, 중요도, 등록일)을 입력/선택해주세요.');
+                return;
+            }
+
+            if (confirm('게시물을 수정할까요?')) {
+                // 5. fetch를 사용하여 PUT 요청 (Update)
+                fetch(`http://localhost:3000/words/${wordId}`, {
+                    method: 'PUT', // PUT: 전체 데이터를 덮어쓰기
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedWord)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('데이터 수정 실패');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('단어가 성공적으로 수정되었습니다.');
+                    // 수정된 내용을 바로 확인하기 위해 상세 보기 페이지로 이동
+                    window.location.href = `view.html?id=${wordId}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('단어 수정 중 오류가 발생했습니다. (json-server 실행 확인)');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

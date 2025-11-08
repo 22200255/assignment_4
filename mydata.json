@@ -1,0 +1,94 @@
+{
+  "words": [
+    {
+      "id": "1",
+      "word": "Responsive",
+      "meaning": "반응형의",
+      "example": "This website has a responsive design.",
+      "status": "암기 완료",
+      "importance": "3",
+      "reg_date": "2025-10-01"
+    },
+    {
+      "id": "2",
+      "word": "Variable",
+      "meaning": "변수",
+      "example": "x is a variable.",
+      "status": "암기 중",
+      "importance": "2",
+      "reg_date": "2025-09-30"
+    },
+    {
+      "id": "3",
+      "word": "Function",
+      "meaning": "함수",
+      "example": "This is a JavaScript function.",
+      "status": "암기 완료",
+      "importance": "3",
+      "reg_date": "2025-09-29"
+    },
+    {
+      "id": "4",
+      "word": "Algorithm",
+      "meaning": "알고리즘",
+      "example": "A sorting algorithm.",
+      "status": "미암기",
+      "importance": "1",
+      "reg_date": "2025-09-28"
+    },
+    {
+      "id": "5",
+      "word": "Framework",
+      "meaning": "프레임워크",
+      "example": "React is a popular framework.",
+      "status": "암기 중",
+      "importance": "2",
+      "reg_date": "2025-09-27"
+    },
+    {
+      "id": "6",
+      "word": "Database",
+      "meaning": "데이터베이스",
+      "example": "MySQL is a database.",
+      "status": "암기 완료",
+      "importance": "3",
+      "reg_date": "2025-09-26"
+    },
+    {
+      "id": "7",
+      "word": "Syntax",
+      "meaning": "문법",
+      "example": "Check your code syntax.",
+      "status": "암기 완료",
+      "importance": "2",
+      "reg_date": "2025-09-25"
+    },
+    {
+      "id": "8",
+      "word": "Compiler",
+      "meaning": "컴파일러",
+      "example": "A C++ compiler.",
+      "status": "미암기",
+      "importance": "1",
+      "reg_date": "2025-09-24"
+    },
+    {
+      "id": "9",
+      "word": "Cloud",
+      "meaning": "클라우드",
+      "example": "Cloud computing.",
+      "status": "암기 중",
+      "importance": "2",
+      "reg_date": "2025-09-23"
+    },
+    {
+      "id": "10",
+      "word": "Frontend",
+      "meaning": "프론트엔드",
+      "example": "Frontend development involves HTML, CSS, and JS.",
+      "status": "암기 완료",
+      "importance": "3",
+      "reg_date": "2025-09-22"
+    }
+  ]
+}
